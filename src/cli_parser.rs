@@ -3,19 +3,40 @@ use std::path::PathBuf;
 #[derive(Debug, PartialEq)]
 pub struct Cli {
     pub file_path: std::path::PathBuf,
-    pub flags: Vec<String>,
+    pub options: Options,
 }
 
 impl Cli {
-    pub fn try_from_args(args: impl Iterator<Item = String>) -> Result<Self, String> {
+    pub fn try_from(args: impl Iterator<Item = String>) -> Result<Self, String> {
         let mut args = args.skip(1);
         let file_path: PathBuf =
             PathBuf::from(args.next().ok_or(format!("Error. Missing file_path!"))?);
 
-        let flags = args
-            .map(|flag| flag.replace("--", ""))
-            .collect::<Vec<_>>();
-        Ok(Self { file_path, flags })
+        let options = Options::try_from(args.map(|flag| flag.replace("--", "")))?;
+        Ok(Self { file_path, options })
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Options {
+    pub little_endian: bool,
+    pub offset: bool,
+}
+
+impl Options {
+    pub fn try_from(flags: impl Iterator<Item = String>) -> Result<Self, String> {
+        let mut options = Self {
+            little_endian: true,
+            offset: true,
+        };
+        for flag in flags {
+            match flag.as_str() {
+                "big" => options.little_endian = false,
+                "no-offset" => options.offset = false,
+                _ => return Err(format!("Unknow type of flag: {flag}")),
+            }
+        }
+        Ok(options)
     }
 }
 
@@ -30,10 +51,10 @@ mod test {
             .map(String::from);
 
         assert_eq!(
-            Cli::try_from_args(args).unwrap(),
+            Cli::try_from(args).unwrap(),
             Cli {
                 file_path: String::from("file.txt").into(),
-                flags: vec![]
+                options: vec![]
             }
         )
     }
@@ -45,13 +66,10 @@ mod test {
             .map(String::from);
 
         assert_eq!(
-            Cli::try_from_args(args).unwrap(),
+            Cli::try_from(args).unwrap(),
             Cli {
                 file_path: String::from("file.txt").into(),
-                flags: vec![
-                    String::from("little"),
-                    String::from("no-offset"),
-                ]
+                options: vec![String::from("little"), String::from("no-offset"),]
             }
         )
     }
