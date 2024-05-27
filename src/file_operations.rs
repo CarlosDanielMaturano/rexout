@@ -18,12 +18,9 @@ mod test {
     fn read_alphabet_as_hex() {
         let file_path = "mock_files/alphabet.txt";
         let left = (0..=25)
-            .map(|value| {
-                value + ('a' as u8)
-            })
+            .map(|value| value + ('a' as u8))
             .collect::<Vec<_>>();
-        let right = &read_file_content(file_path)
-            .unwrap()[..=25];
+        let right = &read_file_content(file_path).unwrap()[..=25];
         assert_eq!(left, right);
     }
 
