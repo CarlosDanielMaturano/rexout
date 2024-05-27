@@ -13,7 +13,7 @@ pub fn order_bytes(byte_stack: Vec<u8>, little_endian: bool) -> Result<Vec<u16>,
 
     Ok(std::iter::from_fn(|| {
         if let [Some(a), Some(b)] = [byte_stack.next(), byte_stack.next()] {
-            return Some([a, b])
+            return Some([a, b]);
         }
         None
     })
