@@ -11,24 +11,24 @@ fn show_help() {
     eprintln!("{}", help);
 }
 
-fn print_words(words: Vec<u16>) {
+fn print_words(words: Vec<u16>, print_offset: bool) {
     let mut offset = 0;
-    words.chunks(8).for_each(|chunk| {
-        print!("{:08x} ", offset);
-        chunk.into_iter().for_each(|word| {
-            print!("{:04x} ", word);
-            let inc = word
-                .to_be_bytes()
-                .iter()
-                .filter(|byte| **byte != 0)
-                .collect::<Vec<_>>()
-                .len();
-
-            offset += inc;
-        });
-        println!("");
-    });
-    println!("{:08x}", offset);
+    let mut chunks = words.chunks(8);
+    loop {
+        if print_offset {
+            print!("{:08x} ", offset);
+        }
+        if let Some(chunk) = chunks.next() {
+            chunk.into_iter().for_each(|word| {
+                print!("{:04x} ", word);
+                offset += if *word > 0b11111111 { 2 } else { 1 }
+            });
+            println!("");
+            continue;
+        }
+        break;
+    }
+    println!("")
 }
 
 fn main() -> Result<(), String> {
@@ -39,6 +39,6 @@ fn main() -> Result<(), String> {
     })?;
 
     let words = order_bytes(read_file_content(file_path)?, options.little_endian)?;
-    print_words(words);
+    print_words(words, options.offset);
     Ok(())
 }
