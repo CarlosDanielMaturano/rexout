@@ -7,8 +7,14 @@ use cli_parser::Cli;
 use file_operations::read_file_content;
 
 fn show_help() {
-    let help = String::from("Help");
-    eprintln!("{}", help);
+    println!(
+        "Usage:\n\
+        rexout <file path> <options flags>\n\n\
+        file path -> a valid path to a system file.\n\n\
+        flags:\n\
+            \t--big -> the program with print the words on big-endian style\n\
+            \t--no-count -> don't display the byte count of the left\n"
+    );
 }
 
 fn print_words(words: Vec<u16>, print_count: bool) {

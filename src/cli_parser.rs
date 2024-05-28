@@ -10,7 +10,7 @@ impl Cli {
     pub fn try_from(args: impl Iterator<Item = String>) -> Result<Self, String> {
         let mut args = args.skip(1);
         let file_path: PathBuf =
-            PathBuf::from(args.next().ok_or(format!("Error. Missing file_path!"))?);
+            PathBuf::from(args.next().ok_or(format!("Missing file_path!"))?);
 
         let options = Options::try_from(args.map(|flag| flag.replace("--", "")))?;
         Ok(Self { file_path, options })
