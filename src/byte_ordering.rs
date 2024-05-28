@@ -20,9 +20,9 @@ pub fn order_bytes(byte_stack: Vec<u8>, little_endian: bool) -> Result<Vec<u16>,
     .map(|[left, right]| {
         let [left, right] = [left as u16, right as u16];
         if little_endian {
-            (left << 8) | right
-        } else {
             (right << 8) | left
+        } else {
+            (left << 8) | right
         }
     })
     .chain(last_byte)
