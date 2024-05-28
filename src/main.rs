@@ -11,11 +11,11 @@ fn show_help() {
     eprintln!("{}", help);
 }
 
-fn print_words(words: Vec<u16>, print_offset: bool) {
+fn print_words(words: Vec<u16>, print_count: bool) {
     let mut offset = 0;
     let mut chunks = words.chunks(8);
     loop {
-        if print_offset {
+        if print_count {
             print!("{:08x} ", offset);
         }
         if let Some(chunk) = chunks.next() {
@@ -39,6 +39,6 @@ fn main() -> Result<(), String> {
     })?;
 
     let words = order_bytes(read_file_content(file_path)?, options.little_endian)?;
-    print_words(words, options.offset);
+    print_words(words, options.count);
     Ok(())
 }
